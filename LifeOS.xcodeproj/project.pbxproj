@@ -40,6 +40,11 @@
 		A1000000000000000000001F /* WeeklyHealthSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000022 /* WeeklyHealthSummary.swift */; };
 		A10000000000000000000020 /* ReminderPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000023 /* ReminderPreferences.swift */; };
 		A10000000000000000000021 /* BackgroundRefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000024 /* BackgroundRefreshManager.swift */; };
+		A10000000000000000000022 /* DailyCheckIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000026 /* DailyCheckIn.swift */; };
+		A10000000000000000000023 /* DailyCheckInStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000027 /* DailyCheckInStore.swift */; };
+		A10000000000000000000024 /* DailyPlanningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000028 /* DailyPlanningView.swift */; };
+		A10000000000000000000025 /* FocusSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000029 /* FocusSessionManager.swift */; };
+		A10000000000000000000026 /* ScreenTimeAuthorizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000002A /* ScreenTimeAuthorizationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +95,11 @@
 		A20000000000000000000023 /* ReminderPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderPreferences.swift; sourceTree = "<group>"; };
 		A20000000000000000000024 /* BackgroundRefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRefreshManager.swift; sourceTree = "<group>"; };
 		A20000000000000000000025 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A20000000000000000000026 /* DailyCheckIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyCheckIn.swift; sourceTree = "<group>"; };
+		A20000000000000000000027 /* DailyCheckInStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyCheckInStore.swift; sourceTree = "<group>"; };
+		A20000000000000000000028 /* DailyPlanningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyPlanningView.swift; sourceTree = "<group>"; };
+		A20000000000000000000029 /* FocusSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSessionManager.swift; sourceTree = "<group>"; };
+		A2000000000000000000002A /* ScreenTimeAuthorizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeAuthorizationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +158,7 @@
 				A20000000000000000000019 /* AppleConnection.swift */,
 				A20000000000000000000022 /* WeeklyHealthSummary.swift */,
 				A20000000000000000000023 /* ReminderPreferences.swift */,
+				A20000000000000000000026 /* DailyCheckIn.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -162,6 +173,9 @@
 				A2000000000000000000001A /* ApplePermissionManager.swift */,
 				A2000000000000000000001F /* HealthKitDataManager.swift */,
 				A20000000000000000000020 /* EventKitCalendarManager.swift */,
+				A20000000000000000000027 /* DailyCheckInStore.swift */,
+				A20000000000000000000029 /* FocusSessionManager.swift */,
+				A2000000000000000000002A /* ScreenTimeAuthorizationManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -196,6 +210,7 @@
 				A2000000000000000000001B /* AppleConnectionRow.swift */,
 				A2000000000000000000001C /* OnboardingView.swift */,
 				A2000000000000000000001D /* ConnectionsView.swift */,
+				A20000000000000000000028 /* DailyPlanningView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -335,6 +350,7 @@
 				A10000000000000000000017 /* AppleConnection.swift in Sources */,
 				A1000000000000000000001F /* WeeklyHealthSummary.swift in Sources */,
 				A10000000000000000000020 /* ReminderPreferences.swift in Sources */,
+				A10000000000000000000022 /* DailyCheckIn.swift in Sources */,
 				A10000000000000000000009 /* MockHealthDataManager.swift in Sources */,
 				A1000000000000000000000A /* MockFocusDataManager.swift in Sources */,
 				A1000000000000000000000B /* MockCalendarManager.swift in Sources */,
@@ -342,6 +358,9 @@
 				A10000000000000000000018 /* ApplePermissionManager.swift in Sources */,
 				A1000000000000000000001C /* HealthKitDataManager.swift in Sources */,
 				A1000000000000000000001D /* EventKitCalendarManager.swift in Sources */,
+				A10000000000000000000023 /* DailyCheckInStore.swift in Sources */,
+				A10000000000000000000025 /* FocusSessionManager.swift in Sources */,
+				A10000000000000000000026 /* ScreenTimeAuthorizationManager.swift in Sources */,
 				A1000000000000000000000D /* DailyPlannerEngine.swift in Sources */,
 				A1000000000000000000001E /* NotificationScheduler.swift in Sources */,
 				A10000000000000000000021 /* BackgroundRefreshManager.swift in Sources */,
@@ -355,6 +374,7 @@
 				A10000000000000000000019 /* AppleConnectionRow.swift in Sources */,
 				A1000000000000000000001A /* OnboardingView.swift in Sources */,
 				A1000000000000000000001B /* ConnectionsView.swift in Sources */,
+				A10000000000000000000024 /* DailyPlanningView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -19,14 +19,26 @@ private struct AppRootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("lifeos.hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @StateObject private var jobStore: JobApplicationStore
+    @StateObject private var checkInStore: DailyCheckInStore
     @StateObject private var dashboardViewModel: DashboardViewModel
     @StateObject private var permissionManager: ApplePermissionManager
+    @StateObject private var focusSessionManager: FocusSessionManager
+    @StateObject private var screenTimeManager: ScreenTimeAuthorizationManager
 
     init() {
         let store = JobApplicationStore()
+        let checkInStore = DailyCheckInStore()
         _jobStore = StateObject(wrappedValue: store)
-        _dashboardViewModel = StateObject(wrappedValue: DashboardViewModel(jobStore: store))
+        _checkInStore = StateObject(wrappedValue: checkInStore)
+        _dashboardViewModel = StateObject(
+            wrappedValue: DashboardViewModel(
+                jobStore: store,
+                checkInStore: checkInStore
+            )
+        )
         _permissionManager = StateObject(wrappedValue: ApplePermissionManager())
+        _focusSessionManager = StateObject(wrappedValue: FocusSessionManager())
+        _screenTimeManager = StateObject(wrappedValue: ScreenTimeAuthorizationManager())
     }
 
     var body: some View {
@@ -37,7 +49,10 @@ private struct AppRootView: View {
             if hasCompletedOnboarding {
                 RootTabView(dashboardViewModel: dashboardViewModel)
                     .environmentObject(jobStore)
+                    .environmentObject(checkInStore)
                     .environmentObject(permissionManager)
+                    .environmentObject(focusSessionManager)
+                    .environmentObject(screenTimeManager)
             } else {
                 OnboardingView(isComplete: $hasCompletedOnboarding)
                     .environmentObject(permissionManager)

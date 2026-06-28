@@ -71,6 +71,21 @@ final class DailyPlannerEngineTests: XCTestCase {
         XCTAssertEqual(plan.topPriorities.first, "Capgemini Java Developer interview prep")
     }
 
+    func testMorningPrioritiesComeBeforeGeneratedSuggestions() {
+        let plan = engine.generatePlan(
+            healthData: HealthData(sleepHours: 7, steps: 5_000, workoutCompleted: false, restingHeartRate: 68),
+            focusData: FocusData(screenTimeHours: 2, distractingAppUsageMinutes: 20, lateNightUsage: false),
+            calendarEvents: [],
+            jobApplications: [],
+            preferredPriorities: ["Finish portfolio case study", "Practice system design"]
+        )
+
+        XCTAssertEqual(
+            Array(plan.topPriorities.prefix(2)),
+            ["Finish portfolio case study", "Practice system design"]
+        )
+    }
+
     func testScheduleBlocksIncludeStructuredReminderTimes() {
         let plan = engine.generatePlan(
             healthData: HealthData(sleepHours: 7, steps: 5_000, workoutCompleted: false, restingHeartRate: 68),

@@ -2,7 +2,7 @@
 
 LifeOS is a privacy-first personal AI daily operating system MVP for iOS. It combines mocked health, focus, calendar, device, and job-search signals into a simple daily command center that helps a user decide what to do today.
 
-The first version is intentionally local-first and rule-based. It does not require HealthKit, EventKit, DeviceActivity, a backend, or paid AI APIs.
+The app is intentionally local-first and rule-based. HealthKit and EventKit are optional, manual and mock data remain available, and no backend or paid AI API is required.
 
 ## MVP Features
 
@@ -15,6 +15,10 @@ The first version is intentionally local-first and rule-based. It does not requi
 - Rule-based daily planner that generates priorities, schedule suggestions, warnings, and recommendations.
 - SwiftUI tabs for Dashboard, Focus Coach, Energy Insights, Job Search, and Settings.
 - Command-center dashboard with energy ring, focus badge, Now/Next section, and daily timeline.
+- Morning planning with custom priorities, an intention, and expected energy.
+- Evening review with completed-priority count, energy, and a private reflection.
+- Local 25, 50, and 90-minute focus sessions with a daily completed-minutes total.
+- Family Controls authorization and app-selection readiness for future Screen Time shielding.
 - Privacy-first onboarding with explicit Apple-service permission primers.
 - Connections screen for HealthKit, Calendar, Notifications, and future Screen Time support.
 - Editable mock health and focus inputs for demoing different day scenarios.
@@ -101,11 +105,11 @@ Energy Insights includes seven-day HealthKit charts for steps and sleep, plus we
 
 LifeOS also registers a background app-refresh task. iOS decides when that task runs; when granted time, LifeOS refreshes and locally caches the latest health snapshot. The cache is used for up to 12 hours before the app falls back to mock data.
 
-Screen Time remains marked as coming later because DeviceActivity requires Apple's Family Controls entitlement and a more specialized setup.
+Focus Coach includes a local session timer and a Family Controls authorization flow. App selection is ready, but production monitoring and shielding still require Apple's Family Controls entitlement plus DeviceActivity and ManagedSettings extensions.
 
 ## Planning Logic
 
-`DailyPlannerEngine` combines health data, focus data, calendar events, and job applications. Current rules include:
+`DailyPlannerEngine` combines health data, focus data, calendar events, job applications, morning priorities, and weekly health trends. Current rules include:
 
 - Sleep below 6 hours triggers lighter deep-work guidance.
 - Interview events become top priorities.
@@ -113,6 +117,8 @@ Screen Time remains marked as coming later because DeviceActivity requires Apple
 - Late-night usage increases focus risk and creates a warning.
 - Steps below 4,000 generate a walk recommendation.
 - Missing workout data generates a simple movement suggestion.
+- User-entered morning priorities appear before generated suggestions.
+- Low seven-day sleep or step averages create trend-aware recommendations.
 
 ## Privacy-First Design
 

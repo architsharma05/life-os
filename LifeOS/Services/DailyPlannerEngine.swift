@@ -5,18 +5,22 @@ final class DailyPlannerEngine {
         healthData: HealthData,
         focusData: FocusData,
         calendarEvents: [CalendarEvent],
-        jobApplications: [JobApplication]
+        jobApplications: [JobApplication],
+        preferredPriorities: [String] = [],
+        weeklyHealthSummary: WeeklyHealthSummary? = nil
     ) -> DailyPlan {
         let energyScore = calculateEnergyScore(from: healthData)
         let focusRisk = calculateFocusRisk(from: focusData)
         let priorities = buildPriorities(
             calendarEvents: calendarEvents,
-            jobApplications: jobApplications
+            jobApplications: jobApplications,
+            preferredPriorities: preferredPriorities
         )
         let recommendations = buildRecommendations(
             healthData: healthData,
             focusData: focusData,
-            jobApplications: jobApplications
+            jobApplications: jobApplications,
+            weeklyHealthSummary: weeklyHealthSummary
         )
 
         return DailyPlan(
@@ -70,9 +74,10 @@ final class DailyPlannerEngine {
 
     private func buildPriorities(
         calendarEvents: [CalendarEvent],
-        jobApplications: [JobApplication]
+        jobApplications: [JobApplication],
+        preferredPriorities: [String]
     ) -> [String] {
-        var priorities: [String] = []
+        var priorities = preferredPriorities.filter { !$0.isEmpty }
 
         if let interview = calendarEvents.first(where: { $0.type == .interview }) {
             priorities.append(interview.title)
@@ -176,7 +181,8 @@ final class DailyPlannerEngine {
     private func buildRecommendations(
         healthData: HealthData,
         focusData: FocusData,
-        jobApplications: [JobApplication]
+        jobApplications: [JobApplication],
+        weeklyHealthSummary: WeeklyHealthSummary?
     ) -> [Recommendation] {
         var recommendations: [Recommendation] = []
 
@@ -196,6 +202,28 @@ final class DailyPlannerEngine {
                     category: .health,
                     title: "Move today",
                     detail: "No workout is logged. Keep it simple: walk, stretch, or light strength work."
+                )
+            )
+        }
+
+        if let averageSleep = weeklyHealthSummary?.averageSleepHours,
+           averageSleep < 6.5 {
+            recommendations.append(
+                Recommendation(
+                    category: .health,
+                    title: "Protect recovery this week",
+                    detail: "Your seven-day sleep average is \(averageSleep.formatted(.number.precision(.fractionLength(1)))) hours. Reduce late deep work and protect a consistent bedtime."
+                )
+            )
+        }
+
+        if let averageSteps = weeklyHealthSummary?.averageSteps,
+           averageSteps < 5_000 {
+            recommendations.append(
+                Recommendation(
+                    category: .health,
+                    title: "Movement trend is low",
+                    detail: "Your seven-day average is \(averageSteps.formatted()) steps. Add one short walk between focus blocks."
                 )
             )
         }

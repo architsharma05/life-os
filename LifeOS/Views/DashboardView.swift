@@ -3,8 +3,11 @@ import SwiftUI
 struct DashboardView: View {
     @ObservedObject var viewModel: DashboardViewModel
     @EnvironmentObject private var jobStore: JobApplicationStore
+    @EnvironmentObject private var checkInStore: DailyCheckInStore
     @EnvironmentObject private var permissionManager: ApplePermissionManager
     @State private var calendarMessage: String?
+    @State private var showingMorningPlan = false
+    @State private var showingEveningReview = false
 
     var body: some View {
         NavigationStack {
@@ -13,6 +16,7 @@ struct DashboardView: View {
                     heroCard
                     quickMetrics
                     dataSourcesRow
+                    dailyCheckInSection
                     nowNextSection
                     scheduleSection
                     recommendationSection
@@ -37,6 +41,9 @@ struct DashboardView: View {
             .onReceive(jobStore.$applications) { _ in
                 viewModel.refresh()
             }
+            .onReceive(checkInStore.$today) { _ in
+                viewModel.refresh()
+            }
             .task {
                 await viewModel.refreshFromConnectedServices(
                     permissionManager: permissionManager
@@ -48,6 +55,14 @@ struct DashboardView: View {
                 }
             } message: {
                 Text(calendarMessage ?? "")
+            }
+            .sheet(isPresented: $showingMorningPlan) {
+                MorningPlanningView()
+                    .environmentObject(checkInStore)
+            }
+            .sheet(isPresented: $showingEveningReview) {
+                EveningReviewView()
+                    .environmentObject(checkInStore)
             }
         }
     }
@@ -144,6 +159,36 @@ struct DashboardView: View {
                 color: viewModel.calendarDataSource == .appleCalendar ? .blue : .secondary
             )
             Spacer()
+        }
+    }
+
+    private var dailyCheckInSection: some View {
+        SectionCard(title: "Daily Check-In") {
+            if !checkInStore.today.intention.isEmpty {
+                Text(checkInStore.today.intention)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            HStack(spacing: 10) {
+                CheckInButton(
+                    title: "Plan Morning",
+                    iconName: "sunrise.fill",
+                    isComplete: checkInStore.today.morningCompleted,
+                    color: .orange
+                ) {
+                    showingMorningPlan = true
+                }
+
+                CheckInButton(
+                    title: "Review Day",
+                    iconName: "moon.stars.fill",
+                    isComplete: checkInStore.today.eveningCompleted,
+                    color: .indigo
+                ) {
+                    showingEveningReview = true
+                }
+            }
         }
     }
 
@@ -398,6 +443,38 @@ private struct SourcePill: View {
             .padding(.vertical, 6)
             .background(color.opacity(0.10))
             .clipShape(Capsule())
+    }
+}
+
+private struct CheckInButton: View {
+    let title: String
+    let iconName: String
+    let isComplete: Bool
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Image(systemName: iconName)
+                        .foregroundStyle(color)
+                    Spacer()
+                    if isComplete {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                    }
+                }
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(color.opacity(0.10))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
     }
 }
 

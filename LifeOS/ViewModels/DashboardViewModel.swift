@@ -26,6 +26,7 @@ final class DashboardViewModel: ObservableObject {
     private let backgroundRefreshManager: BackgroundRefreshManager
     private let plannerEngine: DailyPlannerEngine
     private let jobStore: JobApplicationStore
+    private let checkInStore: DailyCheckInStore
     private var isUsingCustomMockData = false
 
     init(
@@ -37,7 +38,8 @@ final class DashboardViewModel: ObservableObject {
         notificationScheduler: NotificationScheduler = NotificationScheduler(),
         backgroundRefreshManager: BackgroundRefreshManager = .shared,
         plannerEngine: DailyPlannerEngine = DailyPlannerEngine(),
-        jobStore: JobApplicationStore
+        jobStore: JobApplicationStore,
+        checkInStore: DailyCheckInStore
     ) {
         self.healthDataManager = healthDataManager
         self.focusDataManager = focusDataManager
@@ -48,6 +50,7 @@ final class DashboardViewModel: ObservableObject {
         self.backgroundRefreshManager = backgroundRefreshManager
         self.plannerEngine = plannerEngine
         self.jobStore = jobStore
+        self.checkInStore = checkInStore
 
         let initialHealth = healthDataManager.fetchTodayHealthData()
         let initialFocus = focusDataManager.fetchTodayFocusData()
@@ -61,7 +64,8 @@ final class DashboardViewModel: ObservableObject {
             healthData: initialHealth,
             focusData: initialFocus,
             calendarEvents: initialEvents,
-            jobApplications: jobStore.applications
+            jobApplications: jobStore.applications,
+            preferredPriorities: checkInStore.today.priorities
         )
     }
 
@@ -168,7 +172,9 @@ final class DashboardViewModel: ObservableObject {
             healthData: healthData,
             focusData: focusData,
             calendarEvents: calendarEvents,
-            jobApplications: jobStore.applications
+            jobApplications: jobStore.applications,
+            preferredPriorities: checkInStore.today.priorities,
+            weeklyHealthSummary: weeklyHealthSummary
         )
     }
 

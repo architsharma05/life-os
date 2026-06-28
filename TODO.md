@@ -21,34 +21,41 @@
 
 - Add longer HealthKit trend windows and trend-based planner recommendations.
 - Add editable calendar focus blocks after creation.
-- Add DeviceActivity or Screen Time support for focus risk.
+- Add DeviceActivity monitoring and ManagedSettings shielding after Apple approves the Family Controls entitlement.
 - Add per-reminder toggles and weekday schedules.
 - Keep mock/manual data as a fallback for every Apple integration.
 - Add integration tests using injectable HealthKit and EventKit query abstractions.
 
-## Phase 4: Better Planning
+## Phase 4: Better Planning (Core Complete)
 
-- Add weekly trends for sleep, workouts, and focus.
-- Add a user-configurable priority system.
-- Add interview prep templates.
-- Add calendar conflict detection.
-- Add a daily review flow.
+- Add weekly focus trends alongside the existing sleep, steps, and workout trends.
+- Expand the new daily priority system with reusable interview-prep templates.
+- Extend the existing calendar conflict detection to support editing created blocks.
+- Add weekly summaries based on the new morning and evening review flow.
 
-## Phase 5: Optional AI
+## Phase 5: Focus Integration (Foundation Complete)
+
+- Persist selected apps and categories securely.
+- Add DeviceActivity monitoring and report extensions.
+- Add optional ManagedSettings shields during active focus sessions.
+- Feed approved Screen Time summaries into focus-risk calculations.
+- Keep the local focus timer fully useful without Screen Time permission.
+
+## Phase 6: Optional AI
 
 - Add an AI planning service only after consent.
 - Keep rule-based logic as a fallback.
 - Show users what context is sent to the AI provider.
 - Require approval before saving sensitive memory.
 
-## Phase 6: Sync
+## Phase 7: Sync
 
 - Evaluate whether sync is needed after local-first usage feels solid.
 - Prefer CloudKit for private Apple-native sync.
 - Use Supabase only if web, cross-platform, or server workflows become necessary.
 - Keep offline/local-first behavior working.
 
-## Phase 7: App Store Readiness
+## Phase 8: App Store Readiness
 
 - Write privacy policy.
 - Fill App Store privacy labels accurately.
