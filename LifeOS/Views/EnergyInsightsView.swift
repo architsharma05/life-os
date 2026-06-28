@@ -8,6 +8,7 @@ struct EnergyInsightsView: View {
             List {
                 Section("Energy Score") {
                     LabeledContent("Score", value: "\(viewModel.dailyPlan.energyScore)/100")
+                    LabeledContent("Source", value: viewModel.healthDataSource.rawValue)
                     LabeledContent("Sleep", value: "\(viewModel.healthData.sleepHours.formatted(.number.precision(.fractionLength(1)))) hours")
                     LabeledContent("Steps", value: "\(viewModel.healthData.steps)")
                     LabeledContent("Workout", value: viewModel.healthData.workoutCompleted ? "Completed" : "Not yet")

@@ -15,6 +15,8 @@ The first version is intentionally local-first and rule-based. It does not requi
 - Rule-based daily planner that generates priorities, schedule suggestions, warnings, and recommendations.
 - SwiftUI tabs for Dashboard, Focus Coach, Energy Insights, Job Search, and Settings.
 - Command-center dashboard with energy ring, focus badge, Now/Next section, and daily timeline.
+- Privacy-first onboarding with explicit Apple-service permission primers.
+- Connections screen for HealthKit, Calendar, Notifications, and future Screen Time support.
 - Editable mock health and focus inputs for demoing different day scenarios.
 - Privacy settings explaining local-first storage and future integration boundaries.
 - XCTest coverage for core planner rules.
@@ -62,6 +64,25 @@ Use Settings > Edit today's mock inputs to try different scenarios:
 
 Saving mock inputs recalculates the dashboard immediately.
 
+## Apple Permissions
+
+LifeOS now includes real opt-in permission requests for:
+
+- HealthKit read access for sleep, steps, workouts, heart rate, and resting heart rate.
+- EventKit full calendar access for future event reading and focus-block creation.
+- UserNotifications for future schedule and deadline reminders.
+
+When connected, the Dashboard now reads:
+
+- HealthKit sleep, steps, workouts, and the latest resting heart rate.
+- Today's non-all-day Apple Calendar events.
+
+The dashboard shows source badges so the user can see whether HealthKit, Apple Calendar, manual input, or mock data is active. Missing HealthKit samples fall back safely to mock values instead of breaking the plan.
+
+LifeOS can also create a 90-minute suggested focus block in the user's default Apple Calendar.
+
+Screen Time remains marked as coming later because DeviceActivity requires Apple's Family Controls entitlement and a more specialized setup.
+
 ## Planning Logic
 
 `DailyPlannerEngine` combines health data, focus data, calendar events, and job applications. Current rules include:
@@ -85,8 +106,8 @@ LifeOS is designed to keep the MVP useful without centralizing personal data:
 
 ## Future Integrations
 
-- HealthKit for sleep, steps, workouts, and heart-rate trends.
-- EventKit for real calendar events.
+- HealthKit trends and background updates beyond today's snapshot.
+- Richer EventKit conflict detection and editable calendar blocks.
 - DeviceActivity and Screen Time APIs for focus signals.
 - UserNotifications for focus blocks, walks, interviews, and deadlines.
 - CloudKit for optional Apple-native sync.

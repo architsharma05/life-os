@@ -29,6 +29,13 @@
 		A10000000000000000000014 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000014 /* SettingsView.swift */; };
 		A10000000000000000000015 /* DailyPlannerEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000016 /* DailyPlannerEngineTests.swift */; };
 		A10000000000000000000016 /* JobApplicationRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000018 /* JobApplicationRecord.swift */; };
+		A10000000000000000000017 /* AppleConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000019 /* AppleConnection.swift */; };
+		A10000000000000000000018 /* ApplePermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001A /* ApplePermissionManager.swift */; };
+		A10000000000000000000019 /* AppleConnectionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001B /* AppleConnectionRow.swift */; };
+		A1000000000000000000001A /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001C /* OnboardingView.swift */; };
+		A1000000000000000000001B /* ConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001D /* ConnectionsView.swift */; };
+		A1000000000000000000001C /* HealthKitDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001F /* HealthKitDataManager.swift */; };
+		A1000000000000000000001D /* EventKitCalendarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000020 /* EventKitCalendarManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +73,14 @@
 		A20000000000000000000016 /* DailyPlannerEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyPlannerEngineTests.swift; sourceTree = "<group>"; };
 		A20000000000000000000017 /* LifeOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LifeOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000000000000000000018 /* JobApplicationRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobApplicationRecord.swift; sourceTree = "<group>"; };
+		A20000000000000000000019 /* AppleConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleConnection.swift; sourceTree = "<group>"; };
+		A2000000000000000000001A /* ApplePermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePermissionManager.swift; sourceTree = "<group>"; };
+		A2000000000000000000001B /* AppleConnectionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleConnectionRow.swift; sourceTree = "<group>"; };
+		A2000000000000000000001C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		A2000000000000000000001D /* ConnectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionsView.swift; sourceTree = "<group>"; };
+		A2000000000000000000001E /* LifeOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LifeOS.entitlements; sourceTree = "<group>"; };
+		A2000000000000000000001F /* HealthKitDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitDataManager.swift; sourceTree = "<group>"; };
+		A20000000000000000000020 /* EventKitCalendarManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventKitCalendarManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				A20000000000000000000001 /* LifeOSApp.swift */,
+				A2000000000000000000001E /* LifeOS.entitlements */,
 				A40000000000000000000003 /* Models */,
 				A40000000000000000000004 /* Managers */,
 				A40000000000000000000005 /* Services */,
@@ -119,6 +135,7 @@
 				A20000000000000000000006 /* ScheduleBlock.swift */,
 				A20000000000000000000007 /* Recommendation.swift */,
 				A20000000000000000000008 /* DailyPlan.swift */,
+				A20000000000000000000019 /* AppleConnection.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -130,6 +147,9 @@
 				A2000000000000000000000A /* MockFocusDataManager.swift */,
 				A2000000000000000000000B /* MockCalendarManager.swift */,
 				A2000000000000000000000C /* JobApplicationStore.swift */,
+				A2000000000000000000001A /* ApplePermissionManager.swift */,
+				A2000000000000000000001F /* HealthKitDataManager.swift */,
+				A20000000000000000000020 /* EventKitCalendarManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -159,6 +179,9 @@
 				A20000000000000000000012 /* EnergyInsightsView.swift */,
 				A20000000000000000000013 /* JobSearchView.swift */,
 				A20000000000000000000014 /* SettingsView.swift */,
+				A2000000000000000000001B /* AppleConnectionRow.swift */,
+				A2000000000000000000001C /* OnboardingView.swift */,
+				A2000000000000000000001D /* ConnectionsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -230,6 +253,11 @@
 				TargetAttributes = {
 					A50000000000000000000001 = {
 						CreatedOnToolsVersion = 15.0;
+						SystemCapabilities = {
+							com.apple.HealthKit = {
+								enabled = 1;
+							};
+						};
 					};
 					A50000000000000000000002 = {
 						CreatedOnToolsVersion = 15.0;
@@ -287,10 +315,14 @@
 				A10000000000000000000006 /* ScheduleBlock.swift in Sources */,
 				A10000000000000000000007 /* Recommendation.swift in Sources */,
 				A10000000000000000000008 /* DailyPlan.swift in Sources */,
+				A10000000000000000000017 /* AppleConnection.swift in Sources */,
 				A10000000000000000000009 /* MockHealthDataManager.swift in Sources */,
 				A1000000000000000000000A /* MockFocusDataManager.swift in Sources */,
 				A1000000000000000000000B /* MockCalendarManager.swift in Sources */,
 				A1000000000000000000000C /* JobApplicationStore.swift in Sources */,
+				A10000000000000000000018 /* ApplePermissionManager.swift in Sources */,
+				A1000000000000000000001C /* HealthKitDataManager.swift in Sources */,
+				A1000000000000000000001D /* EventKitCalendarManager.swift in Sources */,
 				A1000000000000000000000D /* DailyPlannerEngine.swift in Sources */,
 				A1000000000000000000000E /* DashboardViewModel.swift in Sources */,
 				A1000000000000000000000F /* RootTabView.swift in Sources */,
@@ -299,6 +331,9 @@
 				A10000000000000000000012 /* EnergyInsightsView.swift in Sources */,
 				A10000000000000000000013 /* JobSearchView.swift in Sources */,
 				A10000000000000000000014 /* SettingsView.swift in Sources */,
+				A10000000000000000000019 /* AppleConnectionRow.swift in Sources */,
+				A1000000000000000000001A /* OnboardingView.swift in Sources */,
+				A1000000000000000000001B /* ConnectionsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,11 +475,15 @@
 		A92000000000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = LifeOS/LifeOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = LifeOS;
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "LifeOS reads your calendar to include interviews, deadlines, and events in your daily plan.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "LifeOS reads your calendar to include interviews, deadlines, and events in your daily plan.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "LifeOS reads health data you approve to estimate energy and suggest a realistic daily plan.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -467,11 +506,15 @@
 		A92000000000000000000002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = LifeOS/LifeOS.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = LifeOS;
+				INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription = "LifeOS reads your calendar to include interviews, deadlines, and events in your daily plan.";
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "LifeOS reads your calendar to include interviews, deadlines, and events in your daily plan.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "LifeOS reads health data you approve to estimate energy and suggest a realistic daily plan.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

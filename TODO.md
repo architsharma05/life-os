@@ -10,8 +10,8 @@
 
 ## Phase 2: Production UI
 
-- Add onboarding with local-first privacy explanation.
-- Add permission primer screens for Health, Calendar, Focus, and Notifications.
+- Refine onboarding copy after TestFlight feedback.
+- Add permission-specific denied and empty states to the main feature screens.
 - Add polished empty states for Dashboard, Jobs, and Settings.
 - Add better dark mode tuning.
 - Add simple animation to the energy ring and schedule timeline.
@@ -19,10 +19,12 @@
 
 ## Phase 3: Apple Integrations
 
-- Replace `MockHealthDataManager` with HealthKit behind a permission screen.
-- Replace `MockCalendarManager` with EventKit.
+- Add HealthKit weekly trends and background refresh.
+- Add EventKit conflict detection before writing focus blocks.
 - Add DeviceActivity or Screen Time support for focus risk.
-- Add notification reminders for schedule blocks and job deadlines.
+- Schedule notification reminders for focus blocks and job deadlines.
+- Keep mock/manual data as a fallback for every Apple integration.
+- Add integration tests using injectable HealthKit and EventKit query abstractions.
 
 ## Phase 4: Better Planning
 

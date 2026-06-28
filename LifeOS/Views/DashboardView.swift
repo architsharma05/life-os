@@ -3,6 +3,8 @@ import SwiftUI
 struct DashboardView: View {
     @ObservedObject var viewModel: DashboardViewModel
     @EnvironmentObject private var jobStore: JobApplicationStore
+    @EnvironmentObject private var permissionManager: ApplePermissionManager
+    @State private var calendarMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -10,6 +12,7 @@ struct DashboardView: View {
                 VStack(alignment: .leading, spacing: 18) {
                     heroCard
                     quickMetrics
+                    dataSourcesRow
                     nowNextSection
                     scheduleSection
                     recommendationSection
@@ -20,12 +23,31 @@ struct DashboardView: View {
             .background(Color(.systemGroupedBackground))
             .navigationTitle("LifeOS")
             .toolbar {
-                Button("Refresh") {
-                    viewModel.refresh()
+                Button {
+                    Task {
+                        await viewModel.refreshFromConnectedServices(
+                            permissionManager: permissionManager
+                        )
+                    }
+                } label: {
+                    Image(systemName: "arrow.clockwise")
                 }
+                .accessibilityLabel("Refresh daily plan")
             }
             .onReceive(jobStore.$applications) { _ in
                 viewModel.refresh()
+            }
+            .task {
+                await viewModel.refreshFromConnectedServices(
+                    permissionManager: permissionManager
+                )
+            }
+            .alert("Calendar", isPresented: calendarAlertBinding) {
+                Button("OK", role: .cancel) {
+                    calendarMessage = nil
+                }
+            } message: {
+                Text(calendarMessage ?? "")
             }
         }
     }
@@ -109,6 +131,22 @@ struct DashboardView: View {
         }
     }
 
+    private var dataSourcesRow: some View {
+        HStack(spacing: 8) {
+            SourcePill(
+                iconName: "heart.fill",
+                label: viewModel.healthDataSource.rawValue,
+                color: viewModel.healthDataSource == .healthKit ? .red : .secondary
+            )
+            SourcePill(
+                iconName: "calendar",
+                label: viewModel.calendarDataSource.rawValue,
+                color: viewModel.calendarDataSource == .appleCalendar ? .blue : .secondary
+            )
+            Spacer()
+        }
+    }
+
     private var nowNextSection: some View {
         SectionCard(title: "Now / Next") {
             VStack(alignment: .leading, spacing: 14) {
@@ -149,13 +187,23 @@ struct DashboardView: View {
 
     private var scheduleSection: some View {
         SectionCard(title: "Today's Flow") {
-            VStack(spacing: 0) {
-                ForEach(Array(viewModel.dailyPlan.scheduleBlocks.enumerated()), id: \.element.id) { index, block in
-                    TimelineRow(
-                        block: block,
-                        isLast: index == viewModel.dailyPlan.scheduleBlocks.count - 1
-                    )
+            VStack(alignment: .leading, spacing: 12) {
+                VStack(spacing: 0) {
+                    ForEach(Array(viewModel.dailyPlan.scheduleBlocks.enumerated()), id: \.element.id) { index, block in
+                        TimelineRow(
+                            block: block,
+                            isLast: index == viewModel.dailyPlan.scheduleBlocks.count - 1
+                        )
+                    }
                 }
+
+                Button {
+                    addFocusBlock()
+                } label: {
+                    Label("Add suggested focus block", systemImage: "calendar.badge.plus")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
             }
         }
     }
@@ -195,6 +243,13 @@ struct DashboardView: View {
         viewModel.dailyPlan.energyScore >= 70 ? "Good day for deep work" : "Use lighter blocks"
     }
 
+    private var calendarAlertBinding: Binding<Bool> {
+        Binding(
+            get: { calendarMessage != nil },
+            set: { if !$0 { calendarMessage = nil } }
+        )
+    }
+
     private var focusSummary: String {
         "Focus risk: \(viewModel.dailyPlan.focusRisk.rawValue)"
     }
@@ -230,6 +285,22 @@ struct DashboardView: View {
         case .focus: return .indigo
         case .career: return .blue
         case .device: return .secondary
+        }
+    }
+
+    private func addFocusBlock() {
+        guard permissionManager.status(for: .calendar) == .connected else {
+            calendarMessage = "Connect Calendar in Settings before adding a focus block."
+            return
+        }
+
+        Task {
+            do {
+                try await viewModel.addSuggestedFocusBlockToCalendar()
+                calendarMessage = "A 90-minute LifeOS focus block was added to your default calendar."
+            } catch {
+                calendarMessage = error.localizedDescription
+            }
         }
     }
 }
@@ -310,6 +381,23 @@ private struct EnergyRing: View {
         if score >= 75 { return .green }
         if score >= 55 { return .orange }
         return .red
+    }
+}
+
+private struct SourcePill: View {
+    let iconName: String
+    let label: String
+    let color: Color
+
+    var body: some View {
+        Label(label, systemImage: iconName)
+            .font(.caption)
+            .fontWeight(.medium)
+            .foregroundStyle(color)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(color.opacity(0.10))
+            .clipShape(Capsule())
     }
 }
 

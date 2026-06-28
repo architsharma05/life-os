@@ -2,10 +2,29 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject var viewModel: DashboardViewModel
+    @EnvironmentObject private var permissionManager: ApplePermissionManager
+    @AppStorage("lifeos.hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
         NavigationStack {
             List {
+                Section("Connections") {
+                    NavigationLink {
+                        ConnectionsView()
+                    } label: {
+                        Label {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Apple Services")
+                                Text("\(connectedCount) of \(AppleConnection.allCases.count) connected")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } icon: {
+                            Image(systemName: "link")
+                        }
+                    }
+                }
+
                 Section("Mock Data") {
                     NavigationLink {
                         MockDataEditorView(viewModel: viewModel)
@@ -35,9 +54,24 @@ struct SettingsView: View {
                     Text("The MVP uses simple MVVM folders: Models, Managers, Services, ViewModels, and Views.")
                     Text("DailyPlannerEngine is rule-based so the logic is explainable and easy to replace later.")
                 }
+
+                Section("Onboarding") {
+                    Button("Show onboarding again") {
+                        hasCompletedOnboarding = false
+                    }
+                }
             }
             .navigationTitle("Settings")
+            .task {
+                await permissionManager.refreshStatuses()
+            }
         }
+    }
+
+    private var connectedCount: Int {
+        AppleConnection.allCases.filter {
+            permissionManager.status(for: $0) == .connected
+        }.count
     }
 }
 
