@@ -4,6 +4,11 @@ struct SettingsView: View {
     @ObservedObject var viewModel: DashboardViewModel
     @EnvironmentObject private var permissionManager: ApplePermissionManager
     @AppStorage("lifeos.hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @AppStorage("lifeos.reminders.focusLeadMinutes") private var focusLeadMinutes = 10
+    @AppStorage("lifeos.reminders.quietStartHour") private var quietStartHour = 22
+    @AppStorage("lifeos.reminders.quietEndHour") private var quietEndHour = 7
+    @AppStorage("lifeos.reminders.reviewHour") private var reviewHour = 20
+    @State private var reminderMessage: String?
 
     var body: some View {
         NavigationStack {
@@ -22,6 +27,54 @@ struct SettingsView: View {
                         } icon: {
                             Image(systemName: "link")
                         }
+                    }
+                }
+
+                Section("Reminders") {
+                    Stepper(
+                        "Focus warning: \(focusLeadMinutes) min",
+                        value: $focusLeadMinutes,
+                        in: 5...30,
+                        step: 5
+                    )
+
+                    Picker("Evening review", selection: $reviewHour) {
+                        ForEach(17...21, id: \.self) { hour in
+                            Text(hourLabel(hour)).tag(hour)
+                        }
+                    }
+
+                    Picker("Quiet hours start", selection: $quietStartHour) {
+                        ForEach(20...23, id: \.self) { hour in
+                            Text(hourLabel(hour)).tag(hour)
+                        }
+                    }
+
+                    Picker("Quiet hours end", selection: $quietEndHour) {
+                        ForEach(5...9, id: \.self) { hour in
+                            Text(hourLabel(hour)).tag(hour)
+                        }
+                    }
+
+                    Button {
+                        scheduleReminders()
+                    } label: {
+                        Label("Schedule smart reminders", systemImage: "bell.badge")
+                    }
+
+                    Button(role: .destructive) {
+                        Task {
+                            await viewModel.cancelReminders()
+                            reminderMessage = "LifeOS reminders were removed."
+                        }
+                    } label: {
+                        Label("Cancel LifeOS reminders", systemImage: "bell.slash")
+                    }
+
+                    if let reminderMessage {
+                        Text(reminderMessage)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
 
@@ -72,6 +125,32 @@ struct SettingsView: View {
         AppleConnection.allCases.filter {
             permissionManager.status(for: $0) == .connected
         }.count
+    }
+
+    private func scheduleReminders() {
+        Task {
+            do {
+                let count = try await viewModel.scheduleReminders(
+                    permissionManager: permissionManager,
+                    preferences: ReminderPreferences(
+                        focusLeadMinutes: focusLeadMinutes,
+                        quietHoursStart: quietStartHour,
+                        quietHoursEnd: quietEndHour,
+                        eveningReviewHour: reviewHour
+                    )
+                )
+                reminderMessage = count == 1
+                    ? "1 reminder scheduled."
+                    : "\(count) reminders scheduled."
+            } catch {
+                reminderMessage = error.localizedDescription
+            }
+        }
+    }
+
+    private func hourLabel(_ hour: Int) -> String {
+        let normalizedHour = hour % 12 == 0 ? 12 : hour % 12
+        return "\(normalizedHour):00 \(hour < 12 ? "AM" : "PM")"
     }
 }
 

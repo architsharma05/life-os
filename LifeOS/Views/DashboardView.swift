@@ -296,8 +296,8 @@ struct DashboardView: View {
 
         Task {
             do {
-                try await viewModel.addSuggestedFocusBlockToCalendar()
-                calendarMessage = "A 90-minute LifeOS focus block was added to your default calendar."
+                let scheduledStart = try await viewModel.addSuggestedFocusBlockToCalendar()
+                calendarMessage = "A 90-minute focus block was added for \(scheduledStart.formatted(date: .abbreviated, time: .shortened))."
             } catch {
                 calendarMessage = error.localizedDescription
             }

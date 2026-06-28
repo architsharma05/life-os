@@ -107,12 +107,16 @@ final class DailyPlannerEngine {
             ScheduleBlock(
                 title: "Morning focus",
                 timeRange: "9:00 AM - 10:30 AM",
-                detail: "Work on \(firstPriority) before lunch."
+                detail: "Work on \(firstPriority) before lunch.",
+                startDate: todayAt(hour: 9),
+                durationMinutes: 90
             ),
             ScheduleBlock(
                 title: "Career admin",
                 timeRange: "2:00 PM - 2:30 PM",
-                detail: "Update job applications and send one follow-up."
+                detail: "Update job applications and send one follow-up.",
+                startDate: todayAt(hour: 14),
+                durationMinutes: 30
             )
         ]
 
@@ -122,7 +126,9 @@ final class DailyPlannerEngine {
                 ScheduleBlock(
                     title: "Energy reset",
                     timeRange: "12:30 PM - 1:00 PM",
-                    detail: "Take a walk, hydrate, and avoid scrolling."
+                    detail: "Take a walk, hydrate, and avoid scrolling.",
+                    startDate: todayAt(hour: 12, minute: 30),
+                    durationMinutes: 30
                 )
             )
         } else {
@@ -130,12 +136,23 @@ final class DailyPlannerEngine {
                 ScheduleBlock(
                     title: "Second focus block",
                     timeRange: "11:00 AM - 12:00 PM",
-                    detail: "Continue interview prep or Java practice."
+                    detail: "Continue interview prep or Java practice.",
+                    startDate: todayAt(hour: 11),
+                    durationMinutes: 60
                 )
             )
         }
 
         return blocks
+    }
+
+    private func todayAt(hour: Int, minute: Int = 0) -> Date {
+        Calendar.current.date(
+            bySettingHour: hour,
+            minute: minute,
+            second: 0,
+            of: Date()
+        ) ?? Date()
     }
 
     private func buildWarnings(healthData: HealthData, focusData: FocusData) -> [String] {

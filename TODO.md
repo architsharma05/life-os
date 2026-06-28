@@ -19,10 +19,10 @@
 
 ## Phase 3: Apple Integrations
 
-- Add HealthKit weekly trends and background refresh.
-- Add EventKit conflict detection before writing focus blocks.
+- Add longer HealthKit trend windows and trend-based planner recommendations.
+- Add editable calendar focus blocks after creation.
 - Add DeviceActivity or Screen Time support for focus risk.
-- Schedule notification reminders for focus blocks and job deadlines.
+- Add per-reminder toggles and weekday schedules.
 - Keep mock/manual data as a fallback for every Apple integration.
 - Add integration tests using injectable HealthKit and EventKit query abstractions.
 

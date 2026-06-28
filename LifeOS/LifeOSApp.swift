@@ -8,11 +8,15 @@ struct LifeOSApp: App {
             AppRootView()
         }
         .modelContainer(for: JobApplicationRecord.self)
+        .backgroundTask(.appRefresh(BackgroundRefreshManager.taskIdentifier)) {
+            await BackgroundRefreshManager.shared.performRefresh()
+        }
     }
 }
 
 private struct AppRootView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("lifeos.hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @StateObject private var jobStore: JobApplicationStore
     @StateObject private var dashboardViewModel: DashboardViewModel
@@ -49,6 +53,11 @@ private struct AppRootView: View {
             await dashboardViewModel.refreshFromConnectedServices(
                 permissionManager: permissionManager
             )
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background {
+                BackgroundRefreshManager.shared.scheduleNextRefresh()
+            }
         }
     }
 }

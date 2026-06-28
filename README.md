@@ -81,6 +81,26 @@ The dashboard shows source badges so the user can see whether HealthKit, Apple C
 
 LifeOS can also create a 90-minute suggested focus block in the user's default Apple Calendar.
 
+Before writing a focus block, LifeOS searches the next seven days in 30-minute increments and avoids overlapping non-all-day calendar events.
+
+With notification permission, Settings can schedule:
+
+- Ten-minute warnings for upcoming LifeOS schedule blocks.
+- Job-deadline reminders at 9:00 AM the day before.
+- A lightweight evening review reminder.
+
+LifeOS reminders can be cancelled without affecting notifications created by other apps.
+
+Reminder timing is configurable in Settings:
+
+- Focus-block lead time from 5 to 30 minutes.
+- Evening review time.
+- Overnight quiet-hour start and end times.
+
+Energy Insights includes seven-day HealthKit charts for steps and sleep, plus weekly averages and workout count.
+
+LifeOS also registers a background app-refresh task. iOS decides when that task runs; when granted time, LifeOS refreshes and locally caches the latest health snapshot. The cache is used for up to 12 hours before the app falls back to mock data.
+
 Screen Time remains marked as coming later because DeviceActivity requires Apple's Family Controls entitlement and a more specialized setup.
 
 ## Planning Logic
@@ -106,7 +126,7 @@ LifeOS is designed to keep the MVP useful without centralizing personal data:
 
 ## Future Integrations
 
-- HealthKit trends and background updates beyond today's snapshot.
+- Longer-term HealthKit trend interpretation beyond the current seven-day charts.
 - Richer EventKit conflict detection and editable calendar blocks.
 - DeviceActivity and Screen Time APIs for focus signals.
 - UserNotifications for focus blocks, walks, interviews, and deadlines.

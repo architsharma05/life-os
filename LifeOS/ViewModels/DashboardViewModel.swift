@@ -13,6 +13,7 @@ final class DashboardViewModel: ObservableObject {
     @Published private(set) var focusData: FocusData
     @Published private(set) var calendarEvents: [CalendarEvent]
     @Published private(set) var dailyPlan: DailyPlan
+    @Published private(set) var weeklyHealthSummary: WeeklyHealthSummary?
     @Published private(set) var healthDataSource: PlannerDataSource = .mock
     @Published private(set) var calendarDataSource: PlannerDataSource = .mock
 
@@ -21,6 +22,8 @@ final class DashboardViewModel: ObservableObject {
     private let calendarManager: MockCalendarManager
     private let healthKitDataManager: HealthKitDataManager
     private let eventKitCalendarManager: EventKitCalendarManager
+    private let notificationScheduler: NotificationScheduler
+    private let backgroundRefreshManager: BackgroundRefreshManager
     private let plannerEngine: DailyPlannerEngine
     private let jobStore: JobApplicationStore
     private var isUsingCustomMockData = false
@@ -31,6 +34,8 @@ final class DashboardViewModel: ObservableObject {
         calendarManager: MockCalendarManager = MockCalendarManager(),
         healthKitDataManager: HealthKitDataManager = HealthKitDataManager(),
         eventKitCalendarManager: EventKitCalendarManager = EventKitCalendarManager(),
+        notificationScheduler: NotificationScheduler = NotificationScheduler(),
+        backgroundRefreshManager: BackgroundRefreshManager = .shared,
         plannerEngine: DailyPlannerEngine = DailyPlannerEngine(),
         jobStore: JobApplicationStore
     ) {
@@ -39,6 +44,8 @@ final class DashboardViewModel: ObservableObject {
         self.calendarManager = calendarManager
         self.healthKitDataManager = healthKitDataManager
         self.eventKitCalendarManager = eventKitCalendarManager
+        self.notificationScheduler = notificationScheduler
+        self.backgroundRefreshManager = backgroundRefreshManager
         self.plannerEngine = plannerEngine
         self.jobStore = jobStore
 
@@ -49,6 +56,7 @@ final class DashboardViewModel: ObservableObject {
         self.healthData = initialHealth
         self.focusData = initialFocus
         self.calendarEvents = initialEvents
+        self.weeklyHealthSummary = nil
         self.dailyPlan = plannerEngine.generatePlan(
             healthData: initialHealth,
             focusData: initialFocus,
@@ -64,19 +72,24 @@ final class DashboardViewModel: ObservableObject {
     @MainActor
     func refreshFromConnectedServices(permissionManager: ApplePermissionManager) async {
         if !isUsingCustomMockData {
-            let fallback = healthDataManager.fetchTodayHealthData()
+            let fallback = backgroundRefreshManager.cachedHealthData()
+                ?? healthDataManager.fetchTodayHealthData()
 
             if permissionManager.status(for: .health) == .connected {
                 do {
                     healthData = try await healthKitDataManager.fetchTodayHealthData(fallback: fallback)
                     healthDataSource = .healthKit
+                    backgroundRefreshManager.cache(healthData)
+                    weeklyHealthSummary = try? await healthKitDataManager.fetchWeeklySummary()
                 } catch {
                     healthData = fallback
                     healthDataSource = .mock
+                    weeklyHealthSummary = nil
                 }
             } else {
                 healthData = fallback
                 healthDataSource = .mock
+                weeklyHealthSummary = nil
             }
 
             focusData = focusDataManager.fetchTodayFocusData()
@@ -99,15 +112,35 @@ final class DashboardViewModel: ObservableObject {
     }
 
     @MainActor
-    func addSuggestedFocusBlockToCalendar() async throws {
+    func addSuggestedFocusBlockToCalendar() async throws -> Date {
         let startDate = nextRoundedHour()
-        try await eventKitCalendarManager.createFocusBlock(
+        let scheduledStart = try await eventKitCalendarManager.createFocusBlock(
             title: dailyPlan.mainPriority,
-            startDate: startDate
+            preferredStartDate: startDate
         )
         calendarEvents = try await eventKitCalendarManager.fetchTodayEvents()
         calendarDataSource = .appleCalendar
         regeneratePlan()
+        return scheduledStart
+    }
+
+    @MainActor
+    func scheduleReminders(
+        permissionManager: ApplePermissionManager,
+        preferences: ReminderPreferences
+    ) async throws -> Int {
+        guard permissionManager.status(for: .notifications) == .connected else {
+            throw AppleIntegrationError.permissionRequired("Notifications")
+        }
+        return try await notificationScheduler.scheduleReminders(
+            for: dailyPlan,
+            jobApplications: jobStore.applications,
+            preferences: preferences
+        )
+    }
+
+    func cancelReminders() async {
+        await notificationScheduler.removeLifeOSReminders()
     }
 
     func updateMockInputs(healthData: HealthData, focusData: FocusData) {
@@ -115,6 +148,7 @@ final class DashboardViewModel: ObservableObject {
         self.healthData = healthData
         self.focusData = focusData
         healthDataSource = .manual
+        weeklyHealthSummary = nil
         regeneratePlan()
     }
 
@@ -125,6 +159,7 @@ final class DashboardViewModel: ObservableObject {
         calendarEvents = calendarManager.fetchTodayEvents()
         healthDataSource = .mock
         calendarDataSource = .mock
+        weeklyHealthSummary = nil
         regeneratePlan()
     }
 

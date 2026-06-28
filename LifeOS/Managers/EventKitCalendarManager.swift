@@ -56,9 +56,9 @@ final class EventKitCalendarManager {
 
     func createFocusBlock(
         title: String,
-        startDate: Date,
+        preferredStartDate: Date,
         durationMinutes: Int = 90
-    ) async throws {
+    ) async throws -> Date {
         guard EKEventStore.authorizationStatus(for: .event) == .fullAccess else {
             throw AppleIntegrationError.permissionRequired("Calendar")
         }
@@ -66,6 +66,10 @@ final class EventKitCalendarManager {
             throw AppleIntegrationError.noWritableCalendar
         }
 
+        let startDate = nextAvailableStart(
+            preferredStart: preferredStartDate,
+            durationMinutes: durationMinutes
+        )
         let event = EKEvent(eventStore: eventStore)
         event.title = "LifeOS Focus: \(title)"
         event.startDate = startDate
@@ -78,6 +82,63 @@ final class EventKitCalendarManager {
         event.notes = "Created from your LifeOS daily plan."
 
         try eventStore.save(event, span: .thisEvent, commit: true)
+        return startDate
+    }
+
+    private func nextAvailableStart(
+        preferredStart: Date,
+        durationMinutes: Int
+    ) -> Date {
+        let duration = TimeInterval(durationMinutes * 60)
+        var searchDay = calendar.startOfDay(for: preferredStart)
+
+        for dayOffset in 0..<7 {
+            if dayOffset > 0 {
+                searchDay = calendar.date(byAdding: .day, value: 1, to: searchDay) ?? searchDay
+            }
+
+            let workdayStart = calendar.date(bySettingHour: 8, minute: 0, second: 0, of: searchDay) ?? searchDay
+            let workdayEnd = calendar.date(bySettingHour: 20, minute: 0, second: 0, of: searchDay) ?? searchDay
+            let initialCandidate = dayOffset == 0 ? max(preferredStart, workdayStart) : workdayStart
+            var candidate = roundedUpToHalfHour(initialCandidate)
+
+            let predicate = eventStore.predicateForEvents(
+                withStart: workdayStart,
+                end: workdayEnd,
+                calendars: nil
+            )
+            let events = eventStore.events(matching: predicate)
+                .filter { !$0.isAllDay }
+                .sorted { $0.startDate < $1.startDate }
+
+            while candidate.addingTimeInterval(duration) <= workdayEnd {
+                let candidateEnd = candidate.addingTimeInterval(duration)
+                let conflicts = events.filter {
+                    $0.startDate < candidateEnd && $0.endDate > candidate
+                }
+
+                if conflicts.isEmpty {
+                    return candidate
+                }
+
+                let latestConflictEnd = conflicts.map(\.endDate).max() ?? candidate
+                candidate = roundedUpToHalfHour(latestConflictEnd)
+            }
+        }
+
+        return preferredStart
+    }
+
+    private func roundedUpToHalfHour(_ date: Date) -> Date {
+        let minute = calendar.component(.minute, from: date)
+        let minutesToAdd = minute == 0 || minute == 30 ? 0 : (minute < 30 ? 30 - minute : 60 - minute)
+        let rounded = calendar.date(byAdding: .minute, value: minutesToAdd, to: date) ?? date
+        return calendar.date(
+            bySettingHour: calendar.component(.hour, from: rounded),
+            minute: calendar.component(.minute, from: rounded),
+            second: 0,
+            of: rounded
+        ) ?? rounded
     }
 
     private func eventType(for title: String) -> CalendarEventType {
